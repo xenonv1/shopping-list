@@ -33,3 +33,7 @@ npm run build
 ```sh
 npm run lint
 ```
+
+### Trello board
+
+https://trello.com/b/HJrDiRgJ/shopping-list-webapp
