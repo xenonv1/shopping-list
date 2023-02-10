@@ -2,7 +2,6 @@
   <ListItem
     v-for="item in items"
     :item="item"
-    :id="itemIds[items.indexOf(item)]"
     @itemDeleted="$emit('itemDeleted')"
   />
 </template>

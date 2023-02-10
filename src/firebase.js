@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, setDoc, collection } from "firebase/firestore";
 import {
   where,
   getDocs,
@@ -11,9 +11,12 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+
 const firebaseConfig = {
   //insert the firebase-config from external file//
 };
+
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -21,12 +24,9 @@ const app = initializeApp(firebaseConfig);
 // Initialize Cloud Firestore and get a reference to the service
 const db = getFirestore(app);
 
-async function checkForItem() {}
-
-export async function initializeItem(itemName) {
-  const docRef = await addDoc(collection(db, "items"), {
+export async function initializeBaseItem(itemName) {
+    await setDoc(doc(db, "items", itemName), {
     name: itemName,
-    quantity: 1,
     unit: "",
     store: {
       globusm: false,
@@ -37,10 +37,6 @@ export async function initializeItem(itemName) {
       real: false,
       globusb: false,
     },
-    isDiscounted: false,
-    notes: "",
-    addedBy: "wombat",
-    addedAt: new Date().toLocaleDateString(),
     tags: {
       Angebot: false,
       Tiefgekühlt: false,
@@ -68,17 +64,54 @@ export async function initializeItem(itemName) {
     },
   });
 
-  console.log("Document written with ID: ", docRef.id);
+  console.log("base-item initialized.");
+  //return a value to prevent a void-promise
+  return true;
+}
+
+async function checkForBaseItem(itemName) {
+  const query = await getDoc(doc(db, "items", itemName));
+  let baseItem = query;
+
+  if(!baseItem.data()) {
+    await initializeBaseItem(itemName)
+  }
+}
+
+export async function addItemToList(itemName) {
+
+    const baseItem = await getBaseItem(itemName);
+    await setDoc(doc(db, "shopping-list", itemName), {
+    name: itemName,
+    quantity: 1,
+    unit: baseItem.unit,
+    store: baseItem.store,
+    isDiscounted: false,
+    notes: "",
+    addedBy: "wombat",
+    addedAt: new Date().toLocaleDateString(),
+    tags: baseItem.tags,
+  })
+}
+
+async function getBaseItem(name) {
+  await checkForBaseItem(name);
+
+  const query = await getDoc(doc(db, "items", name));
+  let baseItem = query;
+
+  return  baseItem.data();
+
 }
 
 export async function getData() {
-  const dataset = await getDocs(collection(db, "items"));
+  const dataset = await getDocs(collection(db, "shopping-list"));
 
   return dataset;
 }
 
 export async function getDetailedInformation(id) {
-  const data = await getDoc(doc(db, "items", id));
+  const data = await getDoc(doc(db, "shopping-list", id));
 
   return data.data();
 }
@@ -93,7 +126,7 @@ export async function updateEntries(
   notes,
   tags
 ) {
-  await updateDoc(doc(db, "items", id), {
+  await updateDoc(doc(db, "shopping-list", id), {
     name: name,
     quantity: quantity,
     unit: unit,
@@ -102,8 +135,20 @@ export async function updateEntries(
     notes: notes,
     tags: tags,
   });
+
+  updateBaseItem(id, name, unit, store, tags)
+}
+
+export async function updateBaseItem(id, name, unit, store, tags) {
+  await updateDoc(doc(db, "items", id), {
+    name: name,
+    unit: unit,
+    store: store,
+    tags: tags,
+  });
+  
 }
 
 export async function deleteEntry(id) {
-  await deleteDoc(doc(db, "items", id));
+  await deleteDoc(doc(db, "shopping-list", id));
 }

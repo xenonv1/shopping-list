@@ -6,7 +6,7 @@
 <script>
 import InteractionBar from "../components/InteractionBarComponent.vue";
 import ResultList from "../components/ResultsListComponent.vue";
-import { initializeItem, getData } from "../firebase.js";
+import { addItemToList, getData } from "../firebase.js";
 
 export default {
   name: "HomeView",
@@ -15,8 +15,8 @@ export default {
     ResultList,
   },
   methods: {
-    addItem(item) {
-      initializeItem(item);
+    async addItem(item) {
+      await addItemToList(item);
       this.loadItems();
     },
     async loadItems() {
@@ -25,7 +25,6 @@ export default {
 
       data.forEach((item) => {
         this.items.push(item.data());
-        this.itemIds.push(item.id);
       });
     },
   },

@@ -22,7 +22,6 @@ export default {
   name: "ResultComponent",
   props: {
     item: Object,
-    id: String,
   },
   data() {
     return {
@@ -31,10 +30,10 @@ export default {
   },
   methods: {
     pushRoute() {
-      this.$router.push({ name: "details", params: { id: this.id } });
+      this.$router.push({ name: "details", params: { id: this.item.name } });
     },
     deleteItem() {
-      deleteEntry(this.id);
+      deleteEntry(this.item.name);
       this.$emit("itemDeleted");
     },
   },
