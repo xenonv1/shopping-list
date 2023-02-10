@@ -23,8 +23,57 @@ export default {
       this.items = [];
       const data = await getData();
 
+      const itemsUnsorted = [];
+
       data.forEach((item) => {
-        this.items.push(item.data());
+        itemsUnsorted.push(item.data());
+      });
+
+      //Sorting the items by tags//
+
+      //defines the order the tags can be found in the store
+      const sortingBlueprint = [
+        "Kleidung",
+        "Bücher",
+        "Spielzeug",
+        "Schreibwaren",
+        "Haushalt",
+        "Hygiene",
+        "Elektrogeräte",
+        "Backzutaten",
+        "Nudeln",
+        "Reis",
+        "Eingelegt",
+        "Gewürze",
+        "Getränke",
+        "Obst",
+        "Gemüse",
+        "Fleisch",
+        "Käse",
+        "Fisch",
+        "Eier",
+        "Brot",
+        "Tee",
+        "Kaffee",
+        "Süßwaren",
+        "Tiefgekühlt",
+      ];
+
+      //filter items using blueprint and pushing sortedItems into items-array
+      //all items that have at least one tags (except discount)
+      sortingBlueprint.forEach((filter) => {
+        console.log(filter);
+        const itemsSorted = itemsUnsorted.filter(
+          (item) => item.tags[filter] === true
+        );
+        this.items.push(...itemsSorted);
+      });
+
+      //all items that don't have any tags (e.g. new items)
+      itemsUnsorted.forEach((item) => {
+        //checks if every value in the tags-object is false
+        if (Object.values(item.tags).every((v) => v === false))
+          this.items.unshift(item);
       });
     },
   },
