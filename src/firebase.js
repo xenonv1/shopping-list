@@ -11,9 +11,12 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 
+
 const firebaseConfig = {
-  //insert firebase credentials
+  //insert the firebase-config from external file//
 };
+
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -22,7 +25,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 export async function initializeBaseItem(itemName) {
-  await setDoc(doc(db, "items", itemName), {
+    await setDoc(doc(db, "items", itemName), {
     name: itemName,
     unit: "",
     store: {
@@ -33,8 +36,6 @@ export async function initializeBaseItem(itemName) {
       real: false,
       real: false,
       globusb: false,
-      dehner: false,
-      sonstige: false,
     },
     tags: {
       Angebot: false,
@@ -60,9 +61,6 @@ export async function initializeBaseItem(itemName) {
       Gemüse: false,
       Eingelegt: false,
       Reis: false,
-      Süßwaren: false,
-      Tee: false,
-      Kaffee: false,
     },
   });
 
@@ -75,14 +73,15 @@ async function checkForBaseItem(itemName) {
   const query = await getDoc(doc(db, "items", itemName));
   let baseItem = query;
 
-  if (!baseItem.data()) {
-    await initializeBaseItem(itemName);
+  if(!baseItem.data()) {
+    await initializeBaseItem(itemName)
   }
 }
 
 export async function addItemToList(itemName) {
-  const baseItem = await getBaseItem(itemName);
-  await setDoc(doc(db, "shopping-list", itemName), {
+
+    const baseItem = await getBaseItem(itemName);
+    await setDoc(doc(db, "shopping-list", itemName), {
     name: itemName,
     quantity: 1,
     unit: baseItem.unit,
@@ -92,7 +91,7 @@ export async function addItemToList(itemName) {
     addedBy: "wombat",
     addedAt: new Date().toLocaleDateString(),
     tags: baseItem.tags,
-  });
+  })
 }
 
 async function getBaseItem(name) {
@@ -101,7 +100,8 @@ async function getBaseItem(name) {
   const query = await getDoc(doc(db, "items", name));
   let baseItem = query;
 
-  return baseItem.data();
+  return  baseItem.data();
+
 }
 
 export async function getData() {
@@ -136,7 +136,7 @@ export async function updateEntries(
     tags: tags,
   });
 
-  updateBaseItem(id, name, unit, store, tags);
+  updateBaseItem(id, name, unit, store, tags)
 }
 
 export async function updateBaseItem(id, name, unit, store, tags) {
@@ -146,6 +146,7 @@ export async function updateBaseItem(id, name, unit, store, tags) {
     store: store,
     tags: tags,
   });
+  
 }
 
 export async function deleteEntry(id) {
