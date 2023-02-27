@@ -12,7 +12,7 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  //insert firebase credentials
+  /*insert firebase credentials*/
 };
 
 // Initialize Firebase
